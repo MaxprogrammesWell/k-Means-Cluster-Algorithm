@@ -1,0 +1,18 @@
+function [projected_dataset] = PCA(data)
+% Conducting PCA on dataset to express data in chosen number of dimensions
+arguments (Input)
+    data % Initial dataset
+end
+
+arguments (Output)
+        projected_dataset % Data transformed into chosen number of dimensions
+end
+
+C = cov(data);     % calculate covariance matrix
+[V,D] = eig(C);         % calculate eigendecomposition
+[d,ii] = sort(diag(D),'descend');    % sort eigenvalues
+idx = find((cumsum(d)/sum(d))>0.9,1);   % find # of dims needed to reach >90% variance
+Vlo = V(:,ii(1:idx));          % extract eigenvectors
+
+projected_dataset = data*Vlo;          % project data into lower dimensional PCA space
+end

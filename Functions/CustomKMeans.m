@@ -1,0 +1,66 @@
+function [centroids,labels] = CustomKMeans(max_iteration,centroids,projection,minimum_change,n,k)
+% Implementing a K-Means Cluster Algorithim
+% This function assigns each data point to a cluster based on its closest
+% centroid, and then visualised. After storing these clusters into the
+% previous iteration, the cluster centres are updated as the mean distance
+% between all data points within that cluster. The process repeats until
+% the cluster centres have fully converged.
+arguments (Input)
+    max_iteration
+    centroids
+    projection
+    minimum_change
+    n
+    k
+end
+arguments (Output)
+    centroids
+    labels
+end
+
+labels = zeros(n,1); % Creating vector to assign data to each cluster
+rows = 3; % Number of rows in subplot
+columns = 3; % Number of columns in subplot
+figure(1) % Creating figure for future visualisation
+
+for a = 1:max_iteration % Limits the algorithim to a predefined number of maximum iterations
+
+% Assigning each data point to closest cluster centre
+    for i = 1:n
+        J = sum((centroids - projection(i,:)).^2, 2); % J represents the sum of the square distances of each data point to each cluster centre
+        [~, labels(i)] = min(J); % Assigning each data point to a cluster based on the smallest distance it has to a cluster centre
+    end 
+% Visualisation of iteration
+subplot(rows,columns,a) % Creating subplot
+hold on
+
+% Visualizing the current cluster assignments
+scatter(projection(:,1), projection(:,2), 30, labels, 'filled'); % Scatterplot of the PCA datset
+plot(centroids(:,1), centroids(:,2), 'wx','MarkerSize', 15, 'LineWidth', 3); % Plotting the cluster centre onto the scatterplot
+title(['K-Means Cluster Iteration ' num2str(a)]); % Title of the plot, with flexibility for any change in iteration
+xlabel('PCA 1'); % X axis label
+ylabel('PCA 2'); % Y axis label
+xlim([-3 3]); % The X axis will range from -3 to 3
+ylim([-2 2]); % The Y axis will range from -2 to 2
+hold off
+
+% Storing previous cluster centres
+    prev = centroids;
+
+% Updating cluster centres
+    for m = 1:k
+        cluster_points = projection(labels == m, :); % Assigning data points to cluster m
+        if ~isempty(cluster_points)
+            centroids(m,:) = mean(cluster_points, 1); % Reassigning cluster centre based on the average values of its cluster
+        else
+            centroids(m,:) = projection(randi(n), :); % Reinitialising cluster if it is empty
+        end
+    end 
+
+% Checking to see if clusters have converged
+    if max(abs(centroids - prev), [], 'all') < minimum_change % Breaking the loop if a predefined minumum change in convergence has not been met
+        break
+    end
+
+end
+end
