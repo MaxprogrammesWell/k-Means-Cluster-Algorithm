@@ -1,7 +1,7 @@
 %% Standard Commands
 clc % Clearing Command Window
-clear vars % Clear all variables in workspace
-load("C:\Users\maxwa\OneDrive\Coding Lab Code\Key Exercise 2\Data\waveforms.mat") % Load "waveforms" dataset
+clearvars % Clear all variables in workspace
+load(fullfile('Data', 'waveforms.mat')) % Load "waveforms" dataset
 %% PCA 
 proj = PCA(waveforms); % Projecting original datset into only 2 dimensions
 n = size(proj,1);
